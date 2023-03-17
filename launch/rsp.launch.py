@@ -14,13 +14,17 @@ def generate_launch_description():
 
     # Check if we're told to use sim time
     use_sim_time = LaunchConfiguration('use_sim_time')
-    use_ros2_control = LaunchConfiguration('use_ros2_control')
 
-    # Process the URDF file
+    # Process the URDF file zero (1st ugv)
     pkg_path = os.path.join(get_package_share_directory('articubot_one'))
     xacro_file = os.path.join(pkg_path,'description','robot.urdf.xacro')
     # robot_description_config = xacro.process_file(xacro_file).toxml()
-    robot_description_config = Command(['xacro ', xacro_file, ' use_ros2_control:=', use_ros2_control, ' sim_mode:=', use_sim_time])
+    robot_description_config = Command(['xacro ', xacro_file, ' sim_mode:=', use_sim_time])
+    
+    # Process the URDF file one (2nd ugv)
+    xacro_file_one = os.path.join(pkg_path,'description','robot_one.urdf.xacro')
+    # robot_description_config = xacro.process_file(xacro_file).toxml()
+    robot_description_config_one = Command(['xacro ', xacro_file_one, ' sim_mode:=', use_sim_time])
     
     # Create a robot_state_publisher node
     params = {'robot_description': robot_description_config, 'use_sim_time': use_sim_time}
@@ -30,6 +34,19 @@ def generate_launch_description():
         output='screen',
         parameters=[params]
     )
+    
+    # Creating a robot_state_publisher node for another robot
+    params_one = {'robot_description': robot_description_config_one, 'use_sim_time': use_sim_time}
+    node_robot_state_publisher_one = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[params_one],
+        remappings=[
+        	("robot_description", "robot_description_one")
+        ]
+     )
+    
 
 
     # Launch!
@@ -38,10 +55,7 @@ def generate_launch_description():
             'use_sim_time',
             default_value='false',
             description='Use sim time if true'),
-        DeclareLaunchArgument(
-            'use_ros2_control',
-            default_value='true',
-            description='Use ros2_control if true'),
 
-        node_robot_state_publisher
+        node_robot_state_publisher,
+        node_robot_state_publisher_one
     ])

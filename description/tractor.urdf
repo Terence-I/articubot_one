@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<robot name="agricultural_tractor">
+
+  <!-- Chassis Link -->
+  <link name="chassis">
+    <inertial>
+      <mass value="1000.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1000.0" ixy="0.0" ixz="0.0"
+               iyy="1000.0" iyz="0.0" izz="1000.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+      <geometry>
+        <box size="2.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Front Wheel Links -->
+  <link name="front_left_wheel">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_right_wheel">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </collision>
+
+  </link>
+
+  <!-- Rear Wheel Links -->
+  <link name="rear_left_wheel">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="rear_right_wheel">
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.5" length="0.3"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joints -->
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="front_left_wheel"/>
+    <origin xyz="1.0 0.5 0.3" rpy="-1.570796327 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="front_right_wheel"/>
+    <origin xyz="1.0 -0.5 0.3" rpy="1.570796327 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="rear_left_wheel"/>
+    <origin xyz ="-1.0 0.5 0.3" rpy="-1.570796327 0 0"/>
+
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="rear_right_wheel"/>
+    <origin xyz="-1.0 -0.5 0.3" rpy="1.570796327 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  
+  <!-- ROS2 Gazebo plugin -->
+  <gazebo>
+    <plugin name="skid_steer_drive" filename="libgazebo_ros_skid_steer_drive.so">
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>chassis</robotBaseFrame>
+      <wheelSeparation>1.0</wheelSeparation>
+      <wheelDiameter>1.0</wheelDiameter>
+      <wheelAcceleration>1</wheelAcceleration>
+      <wheelTorque>5</wheelTorque>
+      <updateRate>50.0</updateRate>
+      <publishWheelTF>true</publishWheelTF>
+      <publishTf>true</publishTf>
+      <publishOdom>true</publishOdom>
+      <legacyMode>false</legacyMode>
+      <rosDebugLevel>1</rosDebugLevel>
+      <leftFrontJoint>front_left_wheel_joint</leftFrontJoint>
+      <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
+      <leftRearJoint>rear_left_wheel_joint</leftRearJoint>
+      <rightRearJoint>rear_right_wheel_joint</rightRearJoint>
+    </plugin>
+  </gazebo>
+
+  
+</robot>
+
+

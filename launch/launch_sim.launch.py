@@ -4,8 +4,11 @@ from ament_index_python.packages import get_package_share_directory
 
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess
+from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+from pathlib import Path
 
 from launch_ros.actions import Node
 
@@ -18,54 +21,72 @@ def generate_launch_description():
     # !!! MAKE SURE YOU SET THE PACKAGE NAME CORRECTLY !!!
 
     package_name='articubot_one' #<--- CHANGE ME
+    package_share_directory = get_package_share_directory(package_name)
+    
+    # Define the launch argument for the world file
+    world_arg = DeclareLaunchArgument(
+        'world',
+        default_value=package_share_directory + '/worlds/ugv-uav.world',
+        description='Path to the world file to load'
+    )
+    
+    #spawning location
+    x_pos = '-6.0'
+    y_pos = '-8.0'
+    z_pos = '0.0'
+    
+    x_pos_one = '-6.0'
+    y_pos_one = '-5.0'
+    z_pos_one = '0.0'
+    
+    #custom world to spawn the robots in
+    #world_file = os.path.join(get_package_share_directory(package_name),'worlds','ugv-uav.world')
 
     rsp = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory(package_name),'launch','rsp.launch.py'
-                )]), launch_arguments={'use_sim_time': 'true', 'use_ros2_control': 'true'}.items()
+                )]), launch_arguments={'use_sim_time': 'true'}.items() 
     )
 
-    joystick = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory(package_name),'launch','joystick.launch.py'
-                )]), launch_arguments={'use_sim_time': 'true'}.items()
-    )
+ 
 
-    twist_mux_params = os.path.join(get_package_share_directory(package_name),'config','twist_mux.yaml')
-    twist_mux = Node(
-            package="twist_mux",
-            executable="twist_mux",
-            parameters=[twist_mux_params, {'use_sim_time': True}],
-            remappings=[('/cmd_vel_out','/diff_cont/cmd_vel_unstamped')]
-        )
-
-    gazebo_params_file = os.path.join(get_package_share_directory(package_name),'config','gazebo_params.yaml')
-
+    '''# Set the world and use_sim_time parameters of the gazebo node
+    gazebo = Node(
+        package='gazebo_ros',
+        executable='gazebo',
+        arguments=[
+            '-s', 'libgazebo_ros_factory.so',
+            '-world', LaunchConfiguration('world'),
+            '-use_sim_time', 'true'
+        ],
+        output='screen'
+    )'''
+    
+    
     # Include the Gazebo launch file, provided by the gazebo_ros package
     gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')]),
-                    launch_arguments={'extra_gazebo_args': '--ros-args --params-file ' + gazebo_params_file}.items()
+                    get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')]), launch_arguments={'world': LaunchConfiguration('world')}.items()
              )
 
     # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
                         arguments=['-topic', 'robot_description',
+                                   '-x', x_pos,
+                                   '-y', y_pos,
+                                   #'-world', world_file,
                                    '-entity', 'my_bot'],
                         output='screen')
-
-
-    diff_drive_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["diff_cont"],
-    )
-
-    joint_broad_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["joint_broad"],
-    )
+                        
+    
+    # spawner for 2nd ugv.
+    spawn_entity_one = Node(package='gazebo_ros', executable='spawn_entity.py',
+                        arguments=['-topic', 'robot_description_one',
+                                   '-x', x_pos_one,
+                                   '-y', y_pos_one,
+                                   #'-world', world_file,
+                                   '-entity', 'my_bot_one'],
+                        output='screen')
 
 
     # Code for delaying a node (I haven't tested how effective it is)
@@ -89,10 +110,8 @@ def generate_launch_description():
     # Launch them all!
     return LaunchDescription([
         rsp,
-        joystick,
-        twist_mux,
+        world_arg,
         gazebo,
         spawn_entity,
-        diff_drive_spawner,
-        joint_broad_spawner
+        spawn_entity_one,
     ])

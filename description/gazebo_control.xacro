@@ -1,31 +1,54 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    
+  <!-- ROS2 Gazebo plugin -->
+  <gazebo>
+    
+    <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
+        <ros>
+          <!-- Set namespace -->
+          <namespace>/robot</namespace>
+          
+          <remapping>cmd_vel:=cmd_robot</remapping>
+          <remapping>odom:=odom_robot</remapping>
 
-    <gazebo>
-        <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+        </ros>
 
-            <!-- Wheel Information -->
-            <left_joint>left_wheel_joint</left_joint>
-            <right_joint>right_wheel_joint</right_joint>
-            <wheel_separation>0.297</wheel_separation>
-            <wheel_diameter>0.066</wheel_diameter>
+        <!-- Update rate -->
+        <update_rate>500</update_rate>
 
+        <!-- Number of wheel pairs -->
+        <num_wheel_pairs>2</num_wheel_pairs>
 
-            <!-- Limits -->
-            <max_wheel_torque>200</max_wheel_torque>
-            <max_wheel_acceleration>10.0</max_wheel_acceleration>
+        <!-- wheels0 -->
+        <left_joint>left_wheel_joint</left_joint>
+        <right_joint>right_wheel_joint</right_joint>
 
-            
-            <!-- Output -->
-            <odometry_frame>odom</odometry_frame>
-            <robot_base_frame>base_link</robot_base_frame>
+        <!-- wheels1-->
+        <left_joint>left_back_wheel_joint</left_joint>
+        <right_joint>right_back_wheel_joint</right_joint>
 
-            <publish_odom>true</publish_odom>
-            <publish_odom_tf>true</publish_odom_tf>
-            <publish_wheel_tf>true</publish_wheel_tf>
+        <!-- kinematics -->
+        <wheel_separation>0.3</wheel_separation>
+        <wheel_separation>0.3</wheel_separation>
 
-        </plugin>
-    </gazebo>
+        <wheel_diameter>0.4</wheel_diameter>
+        <wheel_diameter>0.4</wheel_diameter>
 
+        <!-- limits -->
+        <max_wheel_torque>100</max_wheel_torque>
+        <max_wheel_acceleration>10.0</max_wheel_acceleration>
 
+        <!-- output -->
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <publish_wheel_tf>true</publish_wheel_tf>
+
+        <odometry_frame>odom_robot</odometry_frame>
+        <robot_base_frame>chassis</robot_base_frame>
+
+      </plugin>
+
+  </gazebo>
+  
 </robot>
