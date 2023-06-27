@@ -7,10 +7,10 @@
     <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
         <ros>
           <!-- Set namespace -->
-          <namespace>/robot</namespace>
+          <namespace>/robot_0</namespace>
           
-          <remapping>cmd_vel:=cmd_robot</remapping>
-          <remapping>odom:=odom_robot</remapping>
+          <remapping>cmd_vel:=cmd_robot_0</remapping>
+          <remapping>odom:=odom_robot_0</remapping>
 
         </ros>
 
@@ -44,7 +44,7 @@
         <publish_odom_tf>true</publish_odom_tf>
         <publish_wheel_tf>true</publish_wheel_tf>
 
-        <odometry_frame>odom_robot</odometry_frame>
+        <odometry_frame>odom_robot_0</odometry_frame>
         <robot_base_frame>chassis</robot_base_frame>
 
       </plugin>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot_one">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot_1">
 
     <xacro:include filename="robot_core_one.xacro" />
     <xacro:include filename="gazebo_control_one.xacro" />
