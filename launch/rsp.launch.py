@@ -26,6 +26,16 @@ def generate_launch_description():
     # robot_description_config = xacro.process_file(xacro_file).toxml()
     robot_description_config_one = Command(['xacro ', xacro_file_one, ' sim_mode:=', use_sim_time])
     
+    # Process the URDF file two (3rd ugv)
+    xacro_file_two = os.path.join(pkg_path,'description','robot_two.urdf.xacro')
+    # robot_description_config = xacro.process_file(xacro_file).toxml()
+    robot_description_config_two = Command(['xacro ', xacro_file_two, ' sim_mode:=', use_sim_time])
+    
+    # Process the URDF file for uav_station
+    xacro_file_uav_station = os.path.join(pkg_path,'description','uav_station.urdf.xacro')
+    # robot_description_config = xacro.process_file(xacro_file).toxml()
+    robot_description_config_uav_station = Command(['xacro ', xacro_file_uav_station, ' sim_mode:=', use_sim_time])
+    
     # Create a robot_state_publisher node
     params = {'robot_description': robot_description_config, 'use_sim_time': use_sim_time}
     node_robot_state_publisher = Node(
@@ -35,7 +45,7 @@ def generate_launch_description():
         parameters=[params]
     )
     
-    # Creating a robot_state_publisher node for another robot
+    # Creating a robot_state_publisher node for UGV2
     params_one = {'robot_description': robot_description_config_one, 'use_sim_time': use_sim_time}
     node_robot_state_publisher_one = Node(
         package='robot_state_publisher',
@@ -46,6 +56,31 @@ def generate_launch_description():
         	("robot_description", "robot_description_one")
         ]
      )
+     
+    # Creating a robot_state_publisher node for UGV3
+    params_two = {'robot_description': robot_description_config_two, 'use_sim_time': use_sim_time}
+    node_robot_state_publisher_two = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[params_two],
+        remappings=[
+        	("robot_description", "robot_description_two")
+        ]
+     )
+     
+    # Creating a robot_state_publisher node for the uav_station
+    params_uav_station = {'robot_description': robot_description_config_uav_station, 'use_sim_time': use_sim_time}
+    node_uav_station_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[params_uav_station],
+        remappings=[
+        	("robot_description", "uav_station_description")
+        ]
+     )
+     
     
 
 
@@ -57,5 +92,7 @@ def generate_launch_description():
             description='Use sim time if true'),
 
         node_robot_state_publisher,
-        node_robot_state_publisher_one
+        node_robot_state_publisher_one,
+        node_robot_state_publisher_two,
+        node_uav_station_state_publisher
     ])

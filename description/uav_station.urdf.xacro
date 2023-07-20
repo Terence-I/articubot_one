@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="uav_station">
+
+    <xacro:include filename="uav_station_core.xacro" />
+    <xacro:include filename="uav_station_gazebo_control.xacro" />
+    
+</robot>
